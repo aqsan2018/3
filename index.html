@@ -106,15 +106,27 @@
 
     <script>
         const yesButton = document.getElementById('yes-button');
-// ... existing code ... -->
+        const noButton = document.getElementById('no-button');
+        const questionContainer = document.getElementById('question-container');
         const successContainer = document.getElementById('success-container');
         const backgroundMusic = document.getElementById('bg-music');
 
         const phrases = [
             "Arey yaar!",
-// ... existing code ... -->
+            "Sach me?",
+            "Pls maan jao na",
+            "Aise to mat karo",
+            "Mera dil toot jayega 💔",
+            "Kyu sata rahi ho?",
+            "Soch lo ek baar aur",
+            "Itna gussa? 😠",
+            "Main ro dunga 😭",
+            "Bahut galat baat hai",
+            "Pakka? Last chance!",
+            "Meri feelings ka kya?",
             "Bye phir. Jaa raha hu.",
-            "Fine! Mat maano."
+            "Ayeeeeee"
+            "Naaa maaniiii"
         ];
 
         const successGifs = [
@@ -145,5 +157,54 @@
 
         const handleNoInteraction = () => {
             // Play music on the first interaction
-// ... existing code ... -->
+            backgroundMusic.play();
+            
+            // Change the text of the 'No' button
+            noButtonClicks = (noButtonClicks + 1) % phrases.length;
+            noButton.textContent = phrases[noButtonClicks];
+
+            // Make the 'Yes' button bigger
+            yesButtonSize += 0.5;
+            yesButton.style.transform = `scale(${yesButtonSize})`;
+
+            // Create and animate a crying emoji
+            createCryingEmoji();
+
+            // Move the 'No' button to a random position
+            const mainContainer = document.getElementById('main-container');
+            const containerRect = mainContainer.getBoundingClientRect();
+            const buttonRect = noButton.getBoundingClientRect();
+
+            const newTop = Math.random() * (containerRect.height - buttonRect.height);
+            const newLeft = Math.random() * (containerRect.width - buttonRect.width);
+
+            noButton.style.position = 'absolute';
+            noButton.style.top = `${newTop}px`;
+            noButton.style.left = `${newLeft}px`;
+        };
+        
+        noButton.addEventListener('mouseover', handleNoInteraction);
+        noButton.addEventListener('click', handleNoInteraction);
+
+
+        function createCryingEmoji() {
+            const emoji = document.createElement('div');
+            emoji.textContent = '😭';
+            emoji.className = 'crying-emoji';
+            
+            // Position the emoji randomly within the viewport
+            emoji.style.left = `${Math.random() * 100}vw`;
+            emoji.style.top = `${Math.random() * 100}vh`;
+
+            document.body.appendChild(emoji);
+
+            // Remove the emoji from the DOM after the animation is done
+            setTimeout(() => {
+                emoji.remove();
+            }, 1500);
+        }
+
+    </script>
+</body>
+</html>
 
