@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>A Very Important Question</title>
+    <!-- Tailwind CSS for styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Pacifico', cursive;
+            overflow: hidden; /* Prevent scrollbars and keep emojis contained */
+        }
+        
+        /* The runaway 'No' button */
+        #no-button {
+            transition: top 0.3s ease, left 0.3s ease;
+        }
+
+        /* Style for the dynamically created crying emojis */
+        .crying-emoji {
+            position: absolute;
+            font-size: 2rem; /* 32px */
+            animation: float-and-fade 1.5s forwards;
+            pointer-events: none; /* Make them unclickable */
+            z-index: 9999;
+        }
+
+        /* Animation for the emojis to float up and fade out */
+        @keyframes float-and-fade {
+            0% {
+                transform: translateY(0);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-50px);
+                opacity: 0;
+            }
+        }
+        
+        /* Container for the running text */
+        .marquee-container {
+            width: 100%;
+            overflow: hidden;
+            white-space: nowrap;
+            background-color: #fce7f3; /* A light pink */
+            color: #be185d; /* A darker pink */
+            padding: 8px 0;
+            border-radius: 9999px; /* pill shape */
+            margin-top: 1.5rem; /* 24px */
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+        }
+
+        /* The scrolling text itself */
+        .marquee-text {
+            display: inline-block;
+            padding-left: 100%;
+            animation: marquee 15s linear infinite;
+        }
+
+        @keyframes marquee {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-100%); }
+        }
+
+    </style>
+</head>
+<body class="bg-pink-100 flex items-center justify-center h-screen">
+
+    <div id="main-container" class="text-center p-6 bg-white rounded-2xl shadow-2xl max-w-md w-full transition-all duration-500">
+        <!-- Initial Question State -->
+        <div id="question-container">
+            <h1 id="question-text" class="text-3xl md:text-4xl text-gray-800 mb-4">Are you my Mutallo?</h1>
+            <img id="main-gif" src="https://media1.tenor.com/m/gUiu1zyxfzYAAAAC/bear-love-bear-kisses.gif" alt="Cute bear asking a question" class="w-48 h-48 mx-auto rounded-lg mb-6">
+            <div class="flex justify-center items-center space-x-4">
+                <button id="yes-button" class="bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-8 rounded-full shadow-lg transition-transform transform hover:scale-105">
+                    Yes
+                </button>
+                <button id="no-button" class="bg-red-500 hover:bg-red-600 text-white font-bold py-3 px-8 rounded-full shadow-lg transition-transform transform hover:scale-105">
+                    No
+                </button>
+            </div>
+        </div>
+
+        <!-- Success State (Initially Hidden) -->
+        <div id="success-container" class="hidden">
+            <h1 class="text-3xl md:text-4xl text-green-600 mb-4">Yeaaahhhh myy potkiii</h1>
+            <img src="https://media1.tenor.com/m/z-Sj_Q0j_w0AAAAC/peach-goma-peach-and-goma.gif" alt="Cute bears celebrating" class="w-48 h-48 mx-auto rounded-lg">
+            
+            <!-- Running Text -->
+            <div class="marquee-container">
+                <div class="marquee-text">
+                    i lovee you my chotku motku potku botku lotku jotku hotku gotku fotku dotku rotku wotku zotku xotki votku
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const yesButton = document.getElementById('yes-button');
+        const noButton = document.getElementById('no-button');
+        const questionContainer = document.getElementById('question-container');
+        const successContainer = document.getElementById('success-container');
+
+        const phrases = [
+            "Nahi",
+            "Pakka soch lo?",
+            "Aesa mat karo please",
+            "Main ro dungi 😭",
+            "Dil tod rahe ho mera 💔",
+            "Kyun tadpa rahe ho?",
+            "Yeh theek nahi hai",
+            "Bas itna hi pyaar?",
+        ];
+
+        let yesButtonSize = 1;
+        let noButtonClicks = 0;
+
+        // --- Event Listeners ---
+
+        yesButton.addEventListener('click', () => {
+            questionContainer.classList.add('hidden');
+            successContainer.classList.remove('hidden');
+        });
+
+        const handleNoInteraction = () => {
+            // Change the text of the 'No' button
+            noButtonClicks = (noButtonClicks + 1) % phrases.length;
+            noButton.textContent = phrases[noButtonClicks];
+
+            // Make the 'Yes' button bigger
+            yesButtonSize += 0.5;
+            yesButton.style.transform = `scale(${yesButtonSize})`;
+
+            // Make the 'No' button move to a random position
+            moveButtonRandomly();
+            // Spawn crying emojis
+            spawnCryingEmojis();
+        };
+
+        // Trigger the effect on both hover and click for mobile/desktop users
+        noButton.addEventListener('mouseover', handleNoInteraction);
+        noButton.addEventListener('click', handleNoInteraction);
+
+        // --- Helper Functions ---
+
+        function moveButtonRandomly() {
+            noButton.style.position = 'absolute';
+            const viewportWidth = window.innerWidth;
+            const viewportHeight = window.innerHeight;
+            const buttonWidth = noButton.offsetWidth;
+            const buttonHeight = noButton.offsetHeight;
+
+            const randomX = Math.floor(Math.random() * (viewportWidth - buttonWidth));
+            const randomY = Math.floor(Math.random() * (viewportHeight - buttonHeight));
+
+            noButton.style.left = `${randomX}px`;
+            noButton.style.top = `${randomY}px`;
+        }
+
+        function spawnCryingEmojis() {
+            // Spawn a burst of 15 emojis at random positions
+            for (let i = 0; i < 15; i++) {
+                const emoji = document.createElement('div');
+                emoji.className = 'crying-emoji';
+                emoji.textContent = '😭';
+
+                // Get random positions across the entire screen
+                const randomX = Math.random() * window.innerWidth;
+                const randomY = Math.random() * window.innerHeight;
+                
+                emoji.style.left = `${randomX}px`;
+                emoji.style.top = `${randomY}px`;
+
+                document.body.appendChild(emoji);
+
+                // IMPORTANT: Remove the emoji from the DOM after its animation ends
+                // to prevent the page from getting clogged with thousands of elements.
+                emoji.addEventListener('animationend', () => {
+                    emoji.remove();
+                });
+            }
+        }
+    </script>
+</body>
+</html>
+
+
+
