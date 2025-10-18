@@ -86,7 +86,13 @@
         <!-- Success State (Initially Hidden) -->
         <div id="success-container" class="hidden">
             <h1 class="text-3xl md:text-4xl text-green-600 mb-4">Yeaaahhhh myy potkiii</h1>
-            <img src="https://media1.tenor.com/m/z-Sj_Q0j_w0AAAAC/peach-goma-peach-and-goma.gif" alt="Cute bears celebrating" class="w-48 h-48 mx-auto rounded-lg">
+            <!-- Container for multiple GIFs -->
+            <div class="grid grid-cols-2 gap-2 mb-4">
+                <img src="https://media1.tenor.com/m/z-Sj_Q0j_w0AAAAC/peach-goma-peach-and-goma.gif" alt="Cute bear celebrating" class="w-full h-auto mx-auto rounded-lg">
+                <img src="https://media1.tenor.com/m/ag-LCp_m5pIAAAAC/peachandgoma-peach.gif" alt="Cute bears hugging" class="w-full h-auto mx-auto rounded-lg">
+                <img src="https://media1.tenor.com/m/82c91pT2i2gAAAAC/peach-and-goma-peach.gif" alt="Cute bears kissing" class="w-full h-auto mx-auto rounded-lg">
+                <img src="https://media1.tenor.com/m/Dujp-Xa-hR0AAAAC/peach-and-goma-love.gif" alt="Cute bears with hearts" class="w-full h-auto mx-auto rounded-lg">
+            </div>
             
             <!-- Running Text -->
             <div class="marquee-container">
@@ -97,94 +103,39 @@
         </div>
     </div>
 
+    <!-- Background Music -->
+    <audio id="bg-music" loop>
+        <!-- I've used a royalty-free romantic track. If you have your own MP3 file online, you can replace this src link. -->
+        <source src="https://cdn.pixabay.com/download/audio/2022/02/14/audio_291fa86b24.mp3" type="audio/mpeg">
+        Your browser does not support the audio element.
+    </audio>
+
     <script>
         const yesButton = document.getElementById('yes-button');
         const noButton = document.getElementById('no-button');
         const questionContainer = document.getElementById('question-container');
         const successContainer = document.getElementById('success-container');
+        const backgroundMusic = document.getElementById('bg-music');
 
         const phrases = [
             "Nahi",
-            "Pakka soch lo?",
-            "Aesa mat karo please",
-            "Main ro dungi 😭",
-            "Dil tod rahe ho mera 💔",
-            "Kyun tadpa rahe ho?",
-            "Yeh theek nahi hai",
-            "Bas itna hi pyaar?",
-        ];
-
-        let yesButtonSize = 1;
+// ... existing code ... -->
         let noButtonClicks = 0;
 
         // --- Event Listeners ---
 
         yesButton.addEventListener('click', () => {
+            // Play music on the first interaction
+            backgroundMusic.play();
             questionContainer.classList.add('hidden');
             successContainer.classList.remove('hidden');
         });
 
         const handleNoInteraction = () => {
+            // Play music on the first interaction
+            backgroundMusic.play();
+            
             // Change the text of the 'No' button
             noButtonClicks = (noButtonClicks + 1) % phrases.length;
-            noButton.textContent = phrases[noButtonClicks];
-
-            // Make the 'Yes' button bigger
-            yesButtonSize += 0.5;
-            yesButton.style.transform = `scale(${yesButtonSize})`;
-
-            // Make the 'No' button move to a random position
-            moveButtonRandomly();
-            // Spawn crying emojis
-            spawnCryingEmojis();
-        };
-
-        // Trigger the effect on both hover and click for mobile/desktop users
-        noButton.addEventListener('mouseover', handleNoInteraction);
-        noButton.addEventListener('click', handleNoInteraction);
-
-        // --- Helper Functions ---
-
-        function moveButtonRandomly() {
-            noButton.style.position = 'absolute';
-            const viewportWidth = window.innerWidth;
-            const viewportHeight = window.innerHeight;
-            const buttonWidth = noButton.offsetWidth;
-            const buttonHeight = noButton.offsetHeight;
-
-            const randomX = Math.floor(Math.random() * (viewportWidth - buttonWidth));
-            const randomY = Math.floor(Math.random() * (viewportHeight - buttonHeight));
-
-            noButton.style.left = `${randomX}px`;
-            noButton.style.top = `${randomY}px`;
-        }
-
-        function spawnCryingEmojis() {
-            // Spawn a burst of 15 emojis at random positions
-            for (let i = 0; i < 15; i++) {
-                const emoji = document.createElement('div');
-                emoji.className = 'crying-emoji';
-                emoji.textContent = '😭';
-
-                // Get random positions across the entire screen
-                const randomX = Math.random() * window.innerWidth;
-                const randomY = Math.random() * window.innerHeight;
-                
-                emoji.style.left = `${randomX}px`;
-                emoji.style.top = `${randomY}px`;
-
-                document.body.appendChild(emoji);
-
-                // IMPORTANT: Remove the emoji from the DOM after its animation ends
-                // to prevent the page from getting clogged with thousands of elements.
-                emoji.addEventListener('animationend', () => {
-                    emoji.remove();
-                });
-            }
-        }
-    </script>
-</body>
-</html>
-
-
+// ... existing code ... -->
 
