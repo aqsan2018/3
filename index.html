@@ -72,7 +72,7 @@
         <!-- Initial Question State -->
         <div id="question-container">
             <h1 id="question-text" class="text-3xl md:text-4xl text-gray-800 mb-4">Are you my Mutallo?</h1>
-            <img id="main-gif" src="https://media1.tenor.com/m/gUiu1zyxfzYAAAAC/bear-love-bear-kisses.gif" alt="Cute bear asking a question" class="w-48 h-48 mx-auto rounded-lg mb-6">
+            <img id="main-gif" src="love1.gif" alt="Cute bear asking a question" class="w-48 h-48 mx-auto rounded-lg mb-6">
             <div class="flex justify-center items-center space-x-4">
                 <button id="yes-button" class="bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-8 rounded-full shadow-lg transition-transform transform hover:scale-105">
                     Yes
@@ -86,13 +86,8 @@
         <!-- Success State (Initially Hidden) -->
         <div id="success-container" class="hidden">
             <h1 class="text-3xl md:text-4xl text-green-600 mb-4">Yeaaahhhh myy potkiii</h1>
-            <!-- Container for multiple GIFs -->
-            <div class="grid grid-cols-2 gap-2 mb-4">
-                <img src="https://media1.tenor.com/m/z-Sj_Q0j_w0AAAAC/peach-goma-peach-and-goma.gif" alt="Cute bear celebrating" class="w-full h-auto mx-auto rounded-lg">
-                <img src="https://media1.tenor.com/m/ag-LCp_m5pIAAAAC/peachandgoma-peach.gif" alt="Cute bears hugging" class="w-full h-auto mx-auto rounded-lg">
-                <img src="https://media1.tenor.com/m/82c91pT2i2gAAAAC/peach-and-goma-peach.gif" alt="Cute bears kissing" class="w-full h-auto mx-auto rounded-lg">
-                <img src="https://media1.tenor.com/m/Dujp-Xa-hR0AAAAC/peach-and-goma-love.gif" alt="Cute bears with hearts" class="w-full h-auto mx-auto rounded-lg">
-            </div>
+            <!-- Container for changing GIFs -->
+            <img id="success-gif" src="lovecutie0.gif" alt="Cute bears celebrating" class="w-48 h-48 mx-auto rounded-lg mb-6">
             
             <!-- Running Text -->
             <div class="marquee-container">
@@ -105,34 +100,29 @@
 
     <!-- Background Music -->
     <audio id="bg-music" loop>
-        <!-- I've used a royalty-free romantic track. If you have your own MP3 file online, you can replace this src link. -->
-        <source src="https://cdn.pixabay.com/download/audio/2022/02/14/audio_291fa86b24.mp3" type="audio/mpeg">
+        <source src="LoveMeLikeYouDo.mp3" type="audio/mpeg">
         Your browser does not support the audio element.
     </audio>
 
     <script>
         const yesButton = document.getElementById('yes-button');
-        const noButton = document.getElementById('no-button');
-        const questionContainer = document.getElementById('question-container');
+// ... existing code ... -->
         const successContainer = document.getElementById('success-container');
         const backgroundMusic = document.getElementById('bg-music');
 
         const phrases = [
             "Arey yaar!",
-            "Sach me?",
-            "Pls maan jao na",
-            "Aise to mat karo",
-            "Mera dil toot jayega 💔",
-            "Kyu sata rahi ho?",
-            "Soch lo ek baar aur",
-            "Itna gussa? 😠",
-            "Main ro dunga 😭",
-            "Bahut galat baat hai",
-            "Pakka? Last chance!",
-            "Meri feelings ka kya?",
+// ... existing code ... -->
             "Bye phir. Jaa raha hu.",
             "Fine! Mat maano."
         ];
+
+        const successGifs = [
+            "lovecutie0.gif", "lovecutie1.gif", "lovecutie2.gif", "lovecutie3.gif",
+            "lovecutie4.gif", "lovecutie5.gif", "lovecutie6.gif", "lovecutie7.gif",
+            "lovecutie8.gif", "lovecutie9.gif", "love2.gif", "love3.gif"
+        ];
+        let currentGifIndex = 0;
 
         let yesButtonSize = 1;
         let noButtonClicks = 0;
@@ -144,14 +134,16 @@
             backgroundMusic.play();
             questionContainer.classList.add('hidden');
             successContainer.classList.remove('hidden');
+
+            // Start changing the success GIF
+            const successGifElement = document.getElementById('success-gif');
+            setInterval(() => {
+                currentGifIndex = (currentGifIndex + 1) % successGifs.length;
+                successGifElement.src = successGifs[currentGifIndex];
+            }, 2000); // Change GIF every 2 seconds
         });
 
         const handleNoInteraction = () => {
             // Play music on the first interaction
-            backgroundMusic.play();
-            
-            // Change the text of the 'No' button
-            noButtonClicks = (noButtonClicks + 1) % phrases.length;
 // ... existing code ... -->
-
 
