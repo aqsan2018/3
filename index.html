@@ -10,17 +10,18 @@
     <style>
         body {
             font-family: 'Pacifico', cursive;
-            overflow: hidden; /* Prevent scrollbars and keep emojis contained */
+            /* overflow: hidden; is removed to allow hearts/emojis to start off-screen */
         }
         
         /* The runaway 'No' button */
         #no-button {
             transition: top 0.3s ease, left 0.3s ease;
+            z-index: 10000; /* Ensure button stays on top */
         }
 
         /* Style for the dynamically created crying emojis */
         .crying-emoji {
-            position: absolute;
+            position: fixed; /* Use fixed to appear anywhere on screen */
             font-size: 2rem; /* 32px */
             animation: float-and-fade 1.5s forwards;
             pointer-events: none; /* Make them unclickable */
@@ -66,21 +67,18 @@
 
         /* Style for the falling hearts */
         .heart {
-            position: absolute;
+            position: fixed; /* Use fixed to appear anywhere on screen */
             font-size: 1.5rem; /* 24px */
             color: red;
             animation: fall 5s linear forwards;
             pointer-events: none;
+            top: -10vh; /* Start above the viewport */
             z-index: 10; /* Ensure hearts are behind the main container */
         }
 
         /* Animation for the hearts to fall down the screen */
         @keyframes fall {
-            0% {
-                transform: translateY(-10vh);
-                opacity: 1;
-            }
-            100% {
+            to {
                 transform: translateY(110vh);
                 opacity: 0;
             }
@@ -88,7 +86,7 @@
 
     </style>
 </head>
-<body class="bg-pink-100 flex items-center justify-center h-screen">
+<body class="bg-pink-100 flex items-center justify-center h-screen overflow-hidden">
 
     <div id="main-container" class="text-center p-6 bg-white rounded-2xl shadow-2xl max-w-md w-full transition-all duration-500 z-20 relative">
         <!-- Initial Question State -->
@@ -173,7 +171,7 @@
 
                 // Start the heart rain
                 if (heartInterval) clearInterval(heartInterval);
-                heartInterval = setInterval(createHeart, 300);
+                heartInterval = setInterval(createHeart, 200);
 
                 // Start changing the success GIF
                 const successGifElement = document.getElementById('success-gif');
@@ -195,16 +193,16 @@
                 yesButtonSize += 0.5;
                 yesButton.style.transform = `scale(${yesButtonSize})`;
 
-                createCryingEmoji();
+                // Create a burst of crying emojis
+                for (let i = 0; i < 5; i++) {
+                    createCryingEmoji();
+                }
 
-                const mainContainer = document.getElementById('main-container');
-                const containerRect = mainContainer.getBoundingClientRect();
                 const buttonRect = noButton.getBoundingClientRect();
+                const newTop = Math.random() * (window.innerHeight - buttonRect.height);
+                const newLeft = Math.random() * (window.innerWidth - buttonRect.width);
 
-                const newTop = Math.random() * (containerRect.height - buttonRect.height);
-                const newLeft = Math.random() * (containerRect.width - buttonRect.width);
-
-                noButton.style.position = 'absolute';
+                noButton.style.position = 'fixed'; // Use 'fixed' to position relative to the viewport
                 noButton.style.top = `${newTop}px`;
                 noButton.style.left = `${newLeft}px`;
             };
