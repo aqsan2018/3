@@ -64,11 +64,33 @@
             100% { transform: translateX(-100%); }
         }
 
+        /* Style for the falling hearts */
+        .heart {
+            position: absolute;
+            font-size: 1.5rem; /* 24px */
+            color: red;
+            animation: fall 5s linear forwards;
+            pointer-events: none;
+            z-index: 10; /* Ensure hearts are behind the main container */
+        }
+
+        /* Animation for the hearts to fall down the screen */
+        @keyframes fall {
+            0% {
+                transform: translateY(-10vh);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(110vh);
+                opacity: 0;
+            }
+        }
+
     </style>
 </head>
 <body class="bg-pink-100 flex items-center justify-center h-screen">
 
-    <div id="main-container" class="text-center p-6 bg-white rounded-2xl shadow-2xl max-w-md w-full transition-all duration-500">
+    <div id="main-container" class="text-center p-6 bg-white rounded-2xl shadow-2xl max-w-md w-full transition-all duration-500 z-20 relative">
         <!-- Initial Question State -->
         <div id="question-container">
             <h1 id="question-text" class="text-3xl md:text-4xl text-gray-800 mb-4">Are you my Mutallo?</h1>
@@ -105,104 +127,86 @@
     </audio>
 
     <script>
-        const yesButton = document.getElementById('yes-button');
-        const noButton = document.getElementById('no-button');
-        const questionContainer = document.getElementById('question-container');
-        const successContainer = document.getElementById('success-container');
-        const backgroundMusic = document.getElementById('bg-music');
+        document.addEventListener('DOMContentLoaded', () => {
+            const yesButton = document.getElementById('yes-button');
+            const noButton = document.getElementById('no-button');
+            const questionContainer = document.getElementById('question-container');
+            const successContainer = document.getElementById('success-container');
+            const backgroundMusic = document.getElementById('bg-music');
 
-        const phrases = [
-            "Arey yaar!",
-            "Sach me?",
-            "Pls maan jao na",
-            "Aise to mat karo",
-            "Mera dil toot jayega 💔",
-            "Kyu sata rahi ho?",
-            "Soch lo ek baar aur",
-            "Itna gussa? 😠",
-            "Main ro dunga 😭",
-            "Bahut galat baat hai",
-            "Pakka? Last chance!",
-            "Meri feelings ka kya?",
-            "Bye phir. Jaa raha hu.",
-            "Fine! Mat maano."
-        ];
+            const phrases = [
+                "Arey yaar!",
+                "Sach me?",
+                "Pls maan jao na",
+                "Aise to mat karo",
+                "Mera dil toot jayega 💔",
+                "Kyu sata rahi ho?",
+                "Soch lo ek baar aur",
+                "Itna gussa? 😠",
+                "Main ro dunga 😭",
+                "Bahut galat baat hai",
+                "Pakka? Last chance!",
+                "Meri feelings ka kya?",
+                "Bye phir. Jaa raha hu.",
+                "Fine! Mat maano."
+            ];
 
-        const successGifs = [
-            "lovecutie0.gif", "lovecutie1.gif", "lovecutie2.gif", "lovecutie3.gif",
-            "lovecutie4.gif", "lovecutie5.gif", "lovecutie6.gif", "lovecutie7.gif",
-            "lovecutie8.gif", "lovecutie9.gif", "love2.gif", "love3.gif"
-        ];
-        let currentGifIndex = 0;
+            const successGifs = [
+                "lovecutie0.gif", "lovecutie1.gif", "lovecutie2.gif", "lovecutie3.gif",
+                "lovecutie4.gif", "lovecutie5.gif", "lovecutie6.gif", "lovecutie7.gif",
+                "lovecutie8.gif", "lovecutie9.gif", "love2.gif", "love3.gif"
+            ];
+            let currentGifIndex = 0;
 
-        let yesButtonSize = 1;
-        let noButtonClicks = 0;
+            let yesButtonSize = 1;
+            let noButtonClicks = 0;
+            let gifInterval; // To hold the interval ID
+            let heartInterval; // To hold the heart rain interval
 
-        // --- Event Listeners ---
+            // --- Event Listeners ---
+            yesButton.addEventListener('click', () => {
+                if (backgroundMusic.paused) {
+                    backgroundMusic.play();
+                }
+                questionContainer.classList.add('hidden');
+                successContainer.classList.remove('hidden');
 
-        yesButton.addEventListener('click', () => {
-            // Play music on the first interaction
-            backgroundMusic.play();
-            questionContainer.classList.add('hidden');
-            successContainer.classList.remove('hidden');
+                // Start the heart rain
+                if (heartInterval) clearInterval(heartInterval);
+                heartInterval = setInterval(createHeart, 300);
 
-            // Start changing the success GIF
-            const successGifElement = document.getElementById('success-gif');
-            setInterval(() => {
-                currentGifIndex = (currentGifIndex + 1) % successGifs.length;
-                successGifElement.src = successGifs[currentGifIndex];
-            }, 2000); // Change GIF every 2 seconds
+                // Start changing the success GIF
+                const successGifElement = document.getElementById('success-gif');
+                if (gifInterval) clearInterval(gifInterval); // Clear any existing interval
+// ... existing code ... -->
+            noButton.addEventListener('mouseover', handleNoInteraction);
+            noButton.addEventListener('click', handleNoInteraction);
+
+
+            function createCryingEmoji() {
+// ... existing code ... -->
+                setTimeout(() => {
+                    emoji.remove();
+                }, 1500);
+            }
+
+            function createHeart() {
+                const heart = document.createElement('div');
+                heart.innerHTML = '❤️';
+                heart.className = 'heart';
+
+                heart.style.left = `${Math.random() * 100}vw`;
+                // Start animation at a random delay to stagger the hearts
+                heart.style.animationDuration = `${Math.random() * 2 + 3}s`;
+
+                document.body.appendChild(heart);
+
+                // Remove the heart from the DOM after it falls
+                setTimeout(() => {
+                    heart.remove();
+                }, 5000);
+            }
         });
-
-        const handleNoInteraction = () => {
-            // Play music on the first interaction
-            backgroundMusic.play();
-            
-            // Change the text of the 'No' button
-            noButtonClicks = (noButtonClicks + 1) % phrases.length;
-            noButton.textContent = phrases[noButtonClicks];
-
-            // Make the 'Yes' button bigger
-            yesButtonSize += 0.5;
-            yesButton.style.transform = `scale(${yesButtonSize})`;
-
-            // Create and animate a crying emoji
-            createCryingEmoji();
-
-            // Move the 'No' button to a random position
-            const mainContainer = document.getElementById('main-container');
-            const containerRect = mainContainer.getBoundingClientRect();
-            const buttonRect = noButton.getBoundingClientRect();
-
-            const newTop = Math.random() * (containerRect.height - buttonRect.height);
-            const newLeft = Math.random() * (containerRect.width - buttonRect.width);
-
-            noButton.style.position = 'absolute';
-            noButton.style.top = `${newTop}px`;
-            noButton.style.left = `${newLeft}px`;
-        };
-        
-        noButton.addEventListener('mouseover', handleNoInteraction);
-        noButton.addEventListener('click', handleNoInteraction);
-
-
-        function createCryingEmoji() {
-            const emoji = document.createElement('div');
-            emoji.textContent = '😭';
-            emoji.className = 'crying-emoji';
-            
-            // Position the emoji randomly within the viewport
-            emoji.style.left = `${Math.random() * 100}vw`;
-            emoji.style.top = `${Math.random() * 100}vh`;
-
-            document.body.appendChild(emoji);
-
-            // Remove the emoji from the DOM after the animation is done
-            setTimeout(() => {
-                emoji.remove();
-            }, 1500);
-        }
-
     </script>
 </body>
 </html>
