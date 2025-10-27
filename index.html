@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>And Needed</title>
+    <title>Ans Needed</title>
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>😊</text></svg>">
     <!-- Tailwind CSS for styling -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -22,14 +22,20 @@
 
         /* --- Main Content (Hidden by default) --- */
         #main-content {
-            visibility: hidden;
+            visibility: hidden; /* Start hidden */
+            opacity: 0; /* Start faded out */
+            transition: opacity 0.5s ease-in; /* Add fade-in */
             width: 100%;
             height: 100%;
             display: flex;
             justify-content: center;
             align-items: center;
         }
-        
+        #main-content.visible { /* Class to show content */
+             visibility: visible;
+             opacity: 1;
+        }
+
         /* Original game styles */
         #no-button {
             transition: top 0.3s ease, left 0.3s ease;
@@ -54,7 +60,7 @@
                 opacity: 0;
             }
         }
-        
+
         .marquee-container {
             width: 100%;
             overflow: hidden;
@@ -252,7 +258,7 @@
                     <h1 class="text-3xl md:text-4xl text-green-600 mb-4">Yeaaahhhh myy potkiii</h1>
                     <!-- Container for changing GIFs -->
                     <img id="success-gif" src="lovecutie0.gif" alt="Cute bears celebrating" class="w-48 h-48 mx-auto rounded-lg mb-6">
-                    
+
                     <!-- Running Text -->
                     <div class="marquee-container">
                         <div class="marquee-text">
@@ -274,7 +280,7 @@
     <script>
         document.addEventListener('DOMContentLoaded', () => {
 
-            // --- NEW Password Lock Script ---
+            // --- Password Lock Elements ---
             const passwordOverlay = document.getElementById('password-overlay');
             const lockBox = document.getElementById('lock-box');
             const passwordInput = document.getElementById('password-input');
@@ -282,118 +288,90 @@
             const mainContent = document.getElementById('main-content');
             const correctPassword = "28072018";
 
-            // Check if already unlocked in this session
-            if (sessionStorage.getItem('isUnlocked') === 'true') {
-                passwordOverlay.style.display = 'none';
-                mainContent.style.visibility = 'visible';
+            // --- Game Elements ---
+            // These are declared here but assigned inside initializeGame if needed
+            let yesButton, noButton, questionContainer, successContainer, backgroundMusic;
+            let phrases, successGifs, currentGifIndex, yesButtonSize, noButtonClicks;
+            let gifInterval, heartInterval;
+
+            // --- Function to Initialize the Game ---
+            function initializeGame() {
+                // Assign game elements now that mainContent is visible
+                yesButton = document.getElementById('yes-button');
+                noButton = document.getElementById('no-button');
+                questionContainer = document.getElementById('question-container');
+                successContainer = document.getElementById('success-container');
+                backgroundMusic = document.getElementById('bg-music');
+
+                phrases = [
+                    "Arey yaar!", "Sach me?", "Pls maan jao na", "Aise to mat karo",
+                    "Mera dil toot jayega 💔", "Kyu sata rahi ho?", "Soch lo ek baar aur",
+                    "Itna gussa? 😠", "Main ro dunga 😭", "Bahut galat baat hai",
+                    "Pakka? Last chance!", "Meri feelings ka kya?", "Bye phir. Jaa raha hu.",
+                    "Fine! Mat maano."
+                ];
+
+                successGifs = [
+                    "lovecutie0.gif", "lovecutie1.gif", "lovecutie2.gif", "lovecutie3.gif",
+                    "lovecutie4.gif", "lovecutie5.gif", "lovecutie6.gif", "lovecutie7.gif",
+                    "lovecutie8.gif", "lovecutie9.gif", "love2.gif", "love3.gif"
+                ];
+                currentGifIndex = 0;
+                yesButtonSize = 1;
+                noButtonClicks = 0;
+
+                // --- Event Listeners (now safely attached) ---
+                yesButton.addEventListener('click', () => {
+                    if (backgroundMusic.paused) {
+                        backgroundMusic.play().catch(e => console.log("Audio play failed"));
+                    }
+                    questionContainer.classList.add('hidden');
+                    successContainer.classList.remove('hidden');
+
+                    // Start the heart rain
+                    if (heartInterval) clearInterval(heartInterval);
+                    heartInterval = setInterval(createHeart, 200);
+
+                    // Start changing the success GIF
+                    const successGifElement = document.getElementById('success-gif');
+                    if (gifInterval) clearInterval(gifInterval); // Clear any existing interval
+                    gifInterval = setInterval(() => {
+                        currentGifIndex = (currentGifIndex + 1) % successGifs.length;
+                        successGifElement.src = successGifs[currentGifIndex];
+                    }, 2000); // Change GIF every 2 seconds
+                });
+
+                const handleNoInteraction = () => {
+                    if (backgroundMusic.paused) {
+                        backgroundMusic.play().catch(e => console.log("Audio play failed"));
+                    }
+
+                    noButtonClicks = (noButtonClicks + 1) % phrases.length;
+                    noButton.textContent = phrases[noButtonClicks];
+
+                    yesButtonSize += 0.5;
+                    yesButton.style.transform = `scale(${yesButtonSize})`;
+
+                    // Create a burst of crying emojis
+                    for (let i = 0; i < 5; i++) {
+                        createCryingEmoji();
+                    }
+
+                    const buttonRect = noButton.getBoundingClientRect();
+                    const newTop = Math.random() * (window.innerHeight - buttonRect.height);
+                    const newLeft = Math.random() * (window.innerWidth - buttonRect.width);
+
+                    noButton.style.position = 'fixed'; // Use 'fixed' to position relative to the viewport
+                    noButton.style.top = `${newTop}px`;
+                    noButton.style.left = `${newLeft}px`;
+                };
+
+                noButton.addEventListener('mouseover', handleNoInteraction);
+                noButton.addEventListener('click', handleNoInteraction);
             }
 
-            lockBox.addEventListener('submit', (e) => {
-                e.preventDefault();
-                const enteredPassword = passwordInput.value;
-
-                if (enteredPassword === correctPassword) {
-                    // Correct password
-                    sessionStorage.setItem('isUnlocked', 'true');
-                    passwordOverlay.style.opacity = '0';
-                    setTimeout(() => {
-                        passwordOverlay.style.display = 'none';
-                    }, 300); // Wait for fade out
-                    mainContent.style.visibility = 'visible'; // Show the game
-                } else {
-                    // Wrong password
-                    errorMessage.textContent = 'Wrong Password. Try Again!';
-                    lockBox.classList.add('shake');
-                    passwordInput.value = '';
-
-                    // Remove shake animation so it can be re-added
-                    setTimeout(() => {
-                        lockBox.classList.remove('shake');
-                        errorMessage.textContent = ''; // Clear error message
-                    }, 1000);
-                }
-            });
-            // --- End Password Lock Script ---
-
-
-            // --- Original Mutallo Game Script ---
-            const yesButton = document.getElementById('yes-button');
-            const noButton = document.getElementById('no-button');
-            const questionContainer = document.getElementById('question-container');
-            const successContainer = document.getElementById('success-container');
-            const backgroundMusic = document.getElementById('bg-music');
-
-            const phrases = [
-                "Arey yaar!", "Sach me?", "Pls maan jao na", "Aise to mat karo",
-                "Mera dil toot jayega 💔", "Kyu sata rahi ho?", "Soch lo ek baar aur",
-                "Itna gussa? 😠", "Main ro dunga 😭", "Bahut galat baat hai",
-                "Pakka? Last chance!", "Meri feelings ka kya?", "Bye phir. Jaa raha hu.",
-                "Fine! Mat maano."
-            ];
-
-            const successGifs = [
-                "lovecutie0.gif", "lovecutie1.gif", "lovecutie2.gif", "lovecutie3.gif",
-                "lovecutie4.gif", "lovecutie5.gif", "lovecutie6.gif", "lovecutie7.gif",
-                "lovecutie8.gif", "lovecutie9.gif", "love2.gif", "love3.gif"
-            ];
-            let currentGifIndex = 0;
-
-            let yesButtonSize = 1;
-            let noButtonClicks = 0;
-            let gifInterval; // To hold the interval ID
-            let heartInterval; // To hold the heart rain interval
-
-            // --- Event Listeners ---
-            yesButton.addEventListener('click', () => {
-                if (backgroundMusic.paused) {
-                    backgroundMusic.play().catch(e => console.log("Audio play failed"));
-                }
-                questionContainer.classList.add('hidden');
-                successContainer.classList.remove('hidden');
-
-                // Start the heart rain
-                if (heartInterval) clearInterval(heartInterval);
-                heartInterval = setInterval(createHeart, 200);
-
-                // Start changing the success GIF
-                const successGifElement = document.getElementById('success-gif');
-                if (gifInterval) clearInterval(gifInterval); // Clear any existing interval
-                gifInterval = setInterval(() => {
-                    currentGifIndex = (currentGifIndex + 1) % successGifs.length;
-                    successGifElement.src = successGifs[currentGifIndex];
-                }, 2000); // Change GIF every 2 seconds
-            });
-
-            const handleNoInteraction = () => {
-                if (backgroundMusic.paused) {
-                    backgroundMusic.play().catch(e => console.log("Audio play failed"));
-                }
-                
-                noButtonClicks = (noButtonClicks + 1) % phrases.length;
-                noButton.textContent = phrases[noButtonClicks];
-
-                yesButtonSize += 0.5;
-                yesButton.style.transform = `scale(${yesButtonSize})`;
-
-                // Create a burst of crying emojis
-                for (let i = 0; i < 5; i++) {
-                    createCryingEmoji();
-                }
-
-                const buttonRect = noButton.getBoundingClientRect();
-                const newTop = Math.random() * (window.innerHeight - buttonRect.height);
-                const newLeft = Math.random() * (window.innerWidth - buttonRect.width);
-
-                noButton.style.position = 'fixed'; // Use 'fixed' to position relative to the viewport
-                noButton.style.top = `${newTop}px`;
-                noButton.style.left = `${newLeft}px`;
-            };
-            
-            noButton.addEventListener('mouseover', handleNoInteraction);
-            noButton.addEventListener('click', handleNoInteraction);
-
-
-            function createCryingEmoji() {
+             // --- Helper Functions (can be outside initializeGame) ---
+             function createCryingEmoji() {
                 const emoji = document.createElement('div');
                 emoji.textContent = '😭';
                 emoji.className = 'crying-emoji';
@@ -414,12 +392,47 @@
                 heart.className = 'heart';
 
                 heart.style.left = `${Math.random() * 100}vw`;
-                // Start animation at a random delay to stagger the hearts
                 heart.style.animationDuration = `${Math.random() * 2 + 3}s`;
 
                 document.body.appendChild(heart);
 
-                // Remove the heart from the DOM after it falls
                 setTimeout(() => {
                     heart.remove();
                 }, 5000);
+            }
+
+            // --- Password Lock Logic ---
+            if (sessionStorage.getItem('isUnlocked') === 'true') {
+                passwordOverlay.style.display = 'none';
+                mainContent.classList.add('visible'); // Use class to trigger fade-in
+                initializeGame(); // Start the game if already unlocked
+            }
+
+            lockBox.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const enteredPassword = passwordInput.value;
+
+                if (enteredPassword === correctPassword) {
+                    sessionStorage.setItem('isUnlocked', 'true');
+                    passwordOverlay.style.opacity = '0';
+                    setTimeout(() => {
+                        passwordOverlay.style.display = 'none';
+                    }, 300);
+                    mainContent.classList.add('visible'); // Show and fade in game
+                    initializeGame(); // Start the game now
+                } else {
+                    errorMessage.textContent = 'Wrong Password. Try Again!';
+                    lockBox.classList.add('shake');
+                    passwordInput.value = '';
+                    setTimeout(() => {
+                        lockBox.classList.remove('shake');
+                        errorMessage.textContent = '';
+                    }, 1000);
+                }
+            });
+
+        }); // End of DOMContentLoaded
+    </script>
+</body>
+</html>
+
